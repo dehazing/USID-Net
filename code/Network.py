@@ -110,16 +110,6 @@ class ResBlock(nn.Module):
 
 class Bottle2neck(nn.Module):
     def __init__(self, in_channels, out_channels, stride=1, downsample=None, baseWidth=26, scale=4, stype='normal', norm='bn'):
-        """ Constructor
-        Args:
-            inplanes: input channel dimensionality
-            planes: output channel dimensionality
-            stride: conv stride. Replaces pooling layer.
-            downsample: None when stride = 1
-            baseWidth: basic width of conv3x3
-            scale: number of scale.
-            type: 'normal': normal set. 'stage': first block of a new stage.
-        """
         super(Bottle2neck, self).__init__()
         width = out_channels // 4
         if norm == 'bn':
@@ -267,16 +257,9 @@ class LayerNorm(nn.Module):
 
     def forward(self, x):
         shape = [-1] + [1] * (x.dim() - 1)
-        # if x.size(0) == 1:
-        #     # These two lines run much faster in pytorch 0.4 than the two lines listed below.
-        #     mean = x.view(-1).mean().view(*shape)
-        #     std = x.view(-1).std().view(*shape)
-        # else:
         mean = x.view(x.size(0), -1).mean(1).view(*shape)
         std = x.view(x.size(0), -1).std(1).view(*shape)
-
         x = (x - mean) / (std + self.eps)
-
         if self.affine:
             shape = [1, -1] + [1] * (x.dim() - 2)
             x = x * self.gamma.view(*shape) + self.beta.view(*shape)
