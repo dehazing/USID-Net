@@ -1,4 +1,4 @@
-from code.Network import USIDNet
+from Network import USIDNet
 import argparse
 import torchvision.utils as vutils
 import torch
